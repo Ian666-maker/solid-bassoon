@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FRAME - 10-Question Client Intake Assessment</title>
+    <style>
+      :root {
+        --bg-primary: #f4f3ef;
+        --card-bg: #ffffff;
+        --text-main: #2b2927;
+        --text-muted: #6b6e65;
+        --accent-gold: #9c8456;
+        --border-color: #e2dfd8;
+      }
+      body {
+        background-color: var(--bg-primary);
+        color: var(--text-main);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        letter-spacing: 0.2px;
+      }
+      .card {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 40px;
+        width: 100%;
+        max-width: 580px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        box-sizing: border-box;
+      }
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+      }
+      .badge {
+        background-color: rgba(156, 132, 86, 0.1);
+        color: var(--accent-gold);
+        font-size: 11px;
+        font-weight: 600;
+        padding: 6px 14px;
+        border-radius: 9999px;
+        border: 1px solid rgba(156, 132, 86, 0.2);
+        text-transform: uppercase;
+      }
+      .brand {
+        color: var(--text-muted);
+        font-size: 13px;
+      }
+      h2 {
+        font-size: 17px;
+        font-weight: 400;
+        margin: 0 0 20px 0;
+        line-height: 1.5;
+        color: var(--text-main);
+      }
+      .options-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-height: 360px;
+        overflow-y: auto;
+      }
+      .option-btn {
+        width: 100%;
+        text-align: left;
+        background-color: #faf9f6;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 14px 16px;
+        color: var(--text-main);
+        font-size: 13.5px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .option-btn:hover {
+        border-color: var(--accent-gold);
+        background-color: rgba(156, 132, 86, 0.05);
+      }
+      .text-input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      textarea,
+      select {
+        width: 100%;
+        background-color: #faf9f6;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 12px;
+        color: var(--text-main);
+        font-size: 14px;
+        outline: none;
+      }
+      .next-btn {
+        background-color: var(--text-main);
+        color: #f4f3ef;
+        border: none;
+        border-radius: 10px;
+        padding: 12px 24px;
+        font-size: 14px;
+        cursor: pointer;
+        margin-top: 16px;
+        font-weight: 500;
+      }
+      .footer-hint {
+        text-align: center;
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-top: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="header">
+        <span id="stepIndicator" class="badge">Question 1 of 10</span>
+        <span id="userNameDisplay" class="brand">Client</span>
+      </div>
+      <div>
+        <h2 id="questionTitle">Loading...</h2>
+        <div id="questionContent"></div>
+      </div>
+      <div class="footer-hint">
+        FRAME 10-Question Comprehensive Assessment[cite: 15]
+      </div>
+    </div>
+
+    <script>
+      window.onload = function () {
+        const name = localStorage.getItem("userName");
+        if (!name || name.trim() === "") {
+          alert("Please complete the registration step first.");
+          window.location.href = "index.html";
+          return;
+        }
+        document.getElementById("userNameDisplay").textContent = name;
+        renderQuestion();
+      };
+
+      let currentIdx = 0;
+      const answersData = {
+        goalCategory: "",
+        goalSummary: "",
+        goalTimeframe: "",
+        goalClarityScore: 3,
+        goalPriorityScore: 5,
+        financialComplexityPoints: 0,
+        investmentKnowledgeInputs: [3],
+        riskComfortInputs: [3],
+        planningReadinessInputs: [3, 3, 3],
+        supportPreference: 3,
+      };
+
+      const questions = [
+        {
+          title:
+            "Q2: What is your main financial goal and timeframe?[cite: 15]",
+          type: "goal_form",
+          options: [
+            {
+              label: "Main Goal Category",
+              id: "goalCat",
+              type: "select",
+              choices: [
+                "retirement",
+                "building wealth",
+                "buying property",
+                "reducing debt",
+                "protecting family",
+                "business planning",
+                "inheritance",
+              ],
+            },
+            {
+              label: "One sentence goal summary",
+              id: "goalSum",
+              type: "text",
+              placeholder:
+                "e.g. Build multi-generational wealth and optimize tax.",
+            },
+            {
+              label: "Ideal Timeframe",
+              id: "goalTime",
+              type: "select",
+              choices: [
+                "within 2 years",
+                "2-5 years",
+                "5-10 years",
+                "10-20 years",
+                "more than 20 years",
+              ],
+            },
+          ],
+        },
+        {
+          title: "Q3: How clear and prioritised are your goals?[cite: 15]",
+          type: "choices",
+          choices: [
+            { text: "A. No clear goal yet", clarity: 0, priority: 1 },
+            { text: "B. General intention only", clarity: 1, priority: 3 },
+            {
+              text: "C. Specific goal with timeframe",
+              clarity: 3,
+              priority: 4,
+            },
+            {
+              text: "D. Specific goal with amount and deadline",
+              clarity: 4,
+              priority: 5,
+            },
+            {
+              text: "E. Multiple prioritized goals with clear trade-offs",
+              clarity: 5,
+              priority: 5,
+            },
+          ],
+        },
+        {
+          title:
+            "Q4: What income and work circumstances apply to you?[cite: 15]",
+          type: "multi_checkbox",
+          options: [
+            { text: "Multiple income sources (+1pt)", points: 1 },
+            { text: "Income pattern changes frequently (+1pt)", points: 1 },
+            { text: "Self-employed or Business owner (+2pts)", points: 2 },
+          ],
+        },
+        {
+          title:
+            "Q5: What assets and financial products do you have?[cite: 15]",
+          type: "multi_checkbox",
+          options: [
+            { text: "Multiple properties (+1pt)", points: 1 },
+            { text: "Multiple financial products/pensions (+2pts)", points: 2 },
+            { text: "Expected inheritance or trust setup (+2pts)", points: 2 },
+          ],
+        },
+        {
+          title: "Q6: What debts or specialist circumstances apply?[cite: 15]",
+          type: "multi_checkbox",
+          options: [
+            { text: "Multiple types of debt (+2pts)", points: 2 },
+            { text: "Dependants / family protection need (+1pt)", points: 1 },
+            {
+              text: "Cross-border finances or tax obligations (+2pts)",
+              points: 2,
+            },
+          ],
+        },
+        {
+          title:
+            "Q7: How much investment knowledge and experience do you have?[cite: 15]",
+          type: "multi_select_knowledge",
+          questionsList: [
+            {
+              label: "Experience Level",
+              choices: [
+                { text: "No experience", val: 0 },
+                { text: "Savings only", val: 1 },
+                { text: "Used pension/fund", val: 2 },
+                { text: "Guided investments", val: 3 },
+                { text: "Regularly manages investments", val: 5 },
+              ],
+            },
+            {
+              label: "What is an investment fund?",
+              choices: [
+                { text: "Collection managed together", val: 5 },
+                { text: "Unsure", val: 0 },
+              ],
+            },
+            {
+              label: "Higher potential return usually means...",
+              choices: [
+                { text: "More risk or uncertainty", val: 5 },
+                { text: "Unsure", val: 0 },
+              ],
+            },
+          ],
+        },
+        {
+          title:
+            "Q8: How would you react to investment risk and market drops?[cite: 15]",
+          type: "multi_select_risk",
+          questionsList: [
+            {
+              label: "After a 15% market fall:",
+              choices: [
+                { text: "Sell everything", val: 0 },
+                { text: "Sell some", val: 1 },
+                { text: "Wait and see", val: 2 },
+                { text: "Continue plan", val: 4 },
+                { text: "Invest more", val: 5 },
+              ],
+            },
+            {
+              label: "Preferred outcome:",
+              choices: [
+                { text: "Predictable low return", val: 0 },
+                { text: "Balanced", val: 2 },
+                { text: "High return with fluctuations", val: 4 },
+                { text: "Highest growth", val: 5 },
+              ],
+            },
+          ],
+        },
+        {
+          title:
+            "Q9: When might you need the money and how ready are you to plan?[cite: 15]",
+          type: "multi_select_readiness",
+          questionsList: [
+            {
+              label: "Money timeframe:",
+              choices: [
+                { text: "Within 2 years", val: 0 },
+                { text: "2-5 years", val: 1 },
+                { text: "5-10 years", val: 3 },
+                { text: "10+ years", val: 5 },
+              ],
+            },
+            {
+              label: "Financial info preparation:",
+              choices: [
+                { text: "Very little", val: 0 },
+                { text: "Basic income/expenses", val: 2 },
+                { text: "Complete accounts", val: 5 },
+              ],
+            },
+            {
+              label: "Willingness to provide documents:",
+              choices: [
+                { text: "Not ready", val: 0 },
+                { text: "Comfortable", val: 4 },
+                { text: "Promptly available", val: 5 },
+              ],
+            },
+          ],
+        },
+        {
+          title: "Q10: What support do you want from your adviser?[cite: 15]",
+          type: "choices",
+          choices: [
+            { text: "A. One-off guidance", supportVal: 1 },
+            { text: "B. Occasional check-ins", supportVal: 2 },
+            { text: "C. Structured financial plan", supportVal: 3 },
+            { text: "D. Ongoing wealth management", supportVal: 4 },
+            { text: "E. Full-service family office", supportVal: 5 },
+          ],
+        },
+      ];
+
+      function renderQuestion() {
+        if (currentIdx >= questions.length) {
+          calculateAndFinish();
+          return;
+        }
+        const q = questions[currentIdx];
+        document.getElementById("stepIndicator").textContent =
+          `Question ${currentIdx + 1} of ${questions.length}`;
+        document.getElementById("questionTitle").textContent = q.title;
+        const container = document.getElementById("questionContent");
+        container.innerHTML = "";
+
+        if (q.type === "goal_form") {
+          let html = '<div class="text-input-group">';
+          q.options.forEach((opt) => {
+            html += `<label>${opt.label}</label>`;
+            if (opt.type === "select") {
+              html +=
+                `<select id="${opt.id}">` +
+                opt.choices
+                  .map((c) => `<option value="${c}">${c}</option>`)
+                  .join("") +
+                `</select>`;
+            } else {
+              html += `<textarea id="${opt.id}" placeholder="${opt.placeholder}" rows="2"></textarea>`;
+            }
+          });
+          html += `<button class="next-btn" onclick="saveGoalForm()">Continue ➔</button></div>`;
+          container.innerHTML = html;
+        } else if (q.type === "choices") {
+          let html = '<div class="options-container">';
+          q.choices.forEach((ch) => {
+            html += `<button class="option-btn" onclick='selectChoice(${JSON.stringify(ch)})'>${ch.text}</button>`;
+          });
+          html += "</div>";
+          container.innerHTML = html;
+        } else if (q.type === "multi_checkbox") {
+          let html = '<div class="options-container">';
+          q.options.forEach((opt, idx) => {
+            html += `<label style="display:flex; align-items:center; gap:10px; padding:12px; background:#faf9f6; border:1px solid var(--border-color); border-radius:8px; cursor:pointer;">
+                        <input type="checkbox" data-points="${opt.points}" style="width:18px; height:18px;">
+                        <span>${opt.text}</span>
+                    </label>`;
+          });
+          html += `<button class="next-btn" onclick="saveCheckboxes()">Continue ➔</button></div>`;
+          container.innerHTML = html;
+        } else if (q.type.startsWith("multi_select_")) {
+          let html = '<div class="text-input-group">';
+          q.questionsList.forEach((sub, sIdx) => {
+            html += `<label>${sub.label}</label>`;
+            html +=
+              `<select id="sub_${sIdx}">` +
+              sub.choices
+                .map((c) => `<option value="${c.val}">${c.text}</option>`)
+                .join("") +
+              `</select>`;
+          });
+          html += `<button class="next-btn" onclick="saveSubSelects('${q.type}')">Continue ➔</button></div>`;
+          container.innerHTML = html;
+        }
+      }
+
+      function saveGoalForm() {
+        answersData.goalCategory = document.getElementById("goalCat").value;
+        answersData.goalSummary =
+          document.getElementById("goalSum").value ||
+          "Client wealth advisory goal.";
+        answersData.goalTimeframe = document.getElementById("goalTime").value;
+        currentIdx++;
+        renderQuestion();
+      }
+
+      function selectChoice(ch) {
+        if (ch.clarity !== undefined) {
+          answersData.goalClarityScore = ch.clarity;
+          answersData.goalPriorityScore = ch.priority;
+        }
+        if (ch.supportVal !== undefined) {
+          answersData.supportPreference = ch.supportVal;
+        }
+        currentIdx++;
+        renderQuestion();
+      }
+
+      function saveCheckboxes() {
+        let pts = 0;
+        document
+          .querySelectorAll('#questionContent input[type="checkbox"]')
+          .forEach((chk) => {
+            if (chk.checked)
+              pts += parseInt(chk.getAttribute("data-points")) || 1;
+          });
+        answersData.financialComplexityPoints += pts;
+        currentIdx++;
+        renderQuestion();
+      }
+
+      function saveSubSelects(type) {
+        const selects = document.querySelectorAll("#questionContent select");
+        let vals = [];
+        selects.forEach((sel) => vals.push(parseInt(sel.value)));
+        if (type === "multi_select_knowledge")
+          answersData.investmentKnowledgeInputs = vals;
+        if (type === "multi_select_risk") answersData.riskComfortInputs = vals;
+        if (type === "multi_select_readiness")
+          answersData.planningReadinessInputs = vals;
+        currentIdx++;
+        renderQuestion();
+      }
+
+      async function calculateAndFinish() {
+        let fc =
+          answersData.financialComplexityPoints <= 1
+            ? 1
+            : answersData.financialComplexityPoints <= 4
+              ? 3
+              : 5;
+        let ik = Math.round(
+          answersData.investmentKnowledgeInputs.reduce((a, b) => a + b, 0) /
+            answersData.investmentKnowledgeInputs.length,
+        );
+        let rc = Math.round(
+          answersData.riskComfortInputs.reduce((a, b) => a + b, 0) /
+            answersData.riskComfortInputs.length,
+        );
+        let gc = Math.round(
+          (answersData.goalClarityScore + answersData.goalPriorityScore) / 2,
+        );
+        let pr = Math.round(
+          (answersData.planningReadinessInputs.reduce((a, b) => a + b, 0) +
+            answersData.supportPreference) /
+            4,
+        );
+
+        const finalScores = {
+          goal_clarity: gc * 20,
+          investment_knowledge: ik * 20,
+          risk_comfort: rc * 20,
+          planning_readiness: pr * 20,
+          financial_complexity: fc * 20,
+        };
+        const avgOverall = Math.round(
+          Object.values(finalScores).reduce((a, b) => a + b, 0) / 5,
+        );
+
+        localStorage.setItem("userScores", JSON.stringify(finalScores));
+        localStorage.setItem("overallAverage", avgOverall);
+        localStorage.setItem("goalSummary", answersData.goalSummary);
+        localStorage.setItem("goalCategory", answersData.goalCategory);
+        localStorage.setItem("goalTimeframe", answersData.goalTimeframe);
+
+        try {
+          const res = await fetch("http://localhost:8000/api/ai-analyze", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              username: localStorage.getItem("userName"),
+              role: localStorage.getItem("userOccupation"),
+              scores: finalScores,
+              overallAverage: avgOverall,
+              goalSummary: answersData.goalSummary,
+            }),
+          });
+          const result = await res.json();
+          localStorage.setItem("aiInsight", result.insight);
+        } catch (e) {
+          localStorage.setItem(
+            "aiInsight",
+            `Executive Summary for ${localStorage.getItem("userName")}: Client aims for ${answersData.goalCategory} within ${answersData.goalTimeframe}. Overall readiness score is ${avgOverall}%. Adviser review recommended.`,
+          );
+        }
+
+        window.location.href = "dashboard.html";
+      }
+    </script>
+  </body>
+</html>

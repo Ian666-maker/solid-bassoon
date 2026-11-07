@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FRAME - Private Wealth Advisory Onboarding</title>
+    <style>
+      :root {
+        --bg-primary: #f4f3ef;
+        --card-bg: #ffffff;
+        --text-main: #2b2927;
+        --text-muted: #6b6e65;
+        --accent-gold: #9c8456;
+        --border-color: #e2dfd8;
+      }
+      body {
+        background-color: var(--bg-primary);
+        color: var(--text-main);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        letter-spacing: 0.2px;
+      }
+      .card {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 40px;
+        width: 100%;
+        max-width: 480px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        box-sizing: border-box;
+      }
+      .badge {
+        background-color: rgba(156, 132, 86, 0.1);
+        color: var(--accent-gold);
+        font-size: 11px;
+        font-weight: 600;
+        padding: 6px 14px;
+        border-radius: 9999px;
+        border: 1px solid rgba(156, 132, 86, 0.2);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: inline-block;
+        margin-bottom: 20px;
+      }
+      h1 {
+        font-size: 26px;
+        font-weight: 400;
+        margin: 0 0 8px 0;
+        color: var(--text-main);
+      }
+      p {
+        color: var(--text-muted);
+        font-size: 14px;
+        margin: 0 0 24px 0;
+        line-height: 1.5;
+      }
+      .form-group {
+        margin-bottom: 18px;
+      }
+      label {
+        display: block;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+        font-weight: 600;
+      }
+      input,
+      select {
+        width: 100%;
+        background-color: #faf9f6;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 12px 14px;
+        color: var(--text-main);
+        font-size: 14px;
+        box-sizing: border-box;
+        outline: none;
+      }
+      input:focus,
+      select:focus {
+        border-color: var(--accent-gold);
+        background-color: #ffffff;
+      }
+      .submit-btn {
+        width: 100%;
+        background-color: var(--text-main);
+        color: #f4f3ef;
+        border: none;
+        border-radius: 10px;
+        padding: 14px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        margin-top: 10px;
+        letter-spacing: 0.5px;
+      }
+      .submit-btn:hover {
+        opacity: 0.9;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <span class="badge">FRAME Private Wealth</span>
+      <h1>Client Onboarding</h1>
+      <p>
+        Please provide your profile details to begin the 10-question
+        assessment[cite: 15].
+      </p>
+
+      <form onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label>Full Name & Preferred Name</label>
+          <input
+            type="text"
+            id="fullName"
+            placeholder="e.g. Alexander Vance"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label>Age Range</label>
+          <select id="ageRange">
+            <option value="25-34">25-34</option>
+            <option value="35-44">35-44</option>
+            <option value="45-54">45-54</option>
+            <option value="55-64">55-64</option>
+            <option value="65 or over">65 or over</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Location</label>
+          <input type="text" id="location" value="Cork, Ireland" required />
+        </div>
+        <div class="form-group">
+          <label>Occupation / Work Status</label>
+          <select id="occupation">
+            <option value="Employed">Employed</option>
+            <option value="Self-Employed">Self-Employed</option>
+            <option value="Business Owner">Business Owner</option>
+            <option value="Retired">Retired</option>
+          </select>
+        </div>
+        <button type="submit" class="submit-btn">Begin Assessment ➔</button>
+      </form>
+    </div>
+
+    <script>
+      function handleRegister(e) {
+        e.preventDefault();
+        localStorage.clear(); // 清理旧缓存，确保全新状态
+        localStorage.setItem(
+          "userName",
+          document.getElementById("fullName").value.trim(),
+        );
+        localStorage.setItem(
+          "userAgeRange",
+          document.getElementById("ageRange").value,
+        );
+        localStorage.setItem(
+          "userLocation",
+          document.getElementById("location").value.trim(),
+        );
+        localStorage.setItem(
+          "userOccupation",
+          document.getElementById("occupation").value,
+        );
+        window.location.href = "quiz.html";
+      }
+    </script>
+  </body>
+</html>

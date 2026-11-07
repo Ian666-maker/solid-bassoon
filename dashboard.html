@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FRAME - Submission Status & Adviser Portal</title>
+    <style>
+      :root {
+        --bg-primary: #f4f3ef;
+        --card-bg: #ffffff;
+        --text-main: #2b2927;
+        --text-muted: #6b6e65;
+        --accent-gold: #9c8456;
+        --border-color: #e2dfd8;
+      }
+      body {
+        background-color: var(--bg-primary);
+        color: var(--text-main);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        margin: 0;
+        padding: 40px 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+      .container {
+        max-width: 600px;
+        width: 100%;
+        margin: 0 auto;
+      }
+      .card {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 40px;
+        text-align: center;
+        box-sizing: border-box;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+      }
+      .badge {
+        background-color: rgba(156, 132, 86, 0.1);
+        color: var(--accent-gold);
+        font-size: 11px;
+        font-weight: 600;
+        padding: 6px 14px;
+        border-radius: 9999px;
+        text-transform: uppercase;
+        display: inline-block;
+        margin-bottom: 20px;
+      }
+      h1 {
+        font-size: 24px;
+        font-weight: 400;
+        margin: 0 0 12px 0;
+        color: var(--text-main);
+      }
+      p {
+        color: var(--text-muted);
+        font-size: 15px;
+        line-height: 1.6;
+        margin-bottom: 30px;
+      }
+
+      /* 顾问端看板样式（HR / Adviser Portal） */
+      .dashboard-container {
+        max-width: 900px;
+        width: 100%;
+        margin: 0 auto;
+        display: none;
+        text-align: left;
+      }
+      .dash-card {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 36px;
+        box-sizing: border-box;
+        margin-bottom: 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+      }
+      .radar-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-sizing: border-box;
+      }
+      .decision-panel {
+        display: flex;
+        gap: 12px;
+        margin-top: 20px;
+      }
+      .decision-btn {
+        flex: 1;
+        padding: 12px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+        border: 1px solid var(--border-color);
+        text-align: center;
+      }
+      .btn-green {
+        background-color: #064e3b;
+        color: #34d399;
+      }
+      .btn-orange {
+        background-color: #78350f;
+        color: #fbbf24;
+      }
+      .btn-red {
+        background-color: #7f1d1d;
+        color: #f87171;
+      }
+      .action-btn {
+        background-color: #faf9f6;
+        color: var(--text-main);
+        border: 1px solid var(--border-color);
+        padding: 10px 18px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 13px;
+        margin-right: 10px;
+        margin-top: 10px;
+      }
+      .action-btn:hover {
+        background-color: var(--accent-gold);
+        color: #fff;
+      }
+      .toggle-mode {
+        margin-top: 20px;
+        font-size: 12px;
+        color: var(--accent-gold);
+        cursor: pointer;
+        text-decoration: underline;
+        background: none;
+        border: none;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 客户端视角（客户填完后看到的成功页面） -->
+    <div class="container" id="clientView">
+      <div class="card">
+        <span class="badge">FRAME PRIVATE WEALTH</span>
+        <h1>Submission Received Successfully</h1>
+        <p>
+          Thank you for completing the 10-question intake assessment. Your
+          profile has been securely transmitted to our private wealth advisory
+          team for review. We will be in touch shortly.
+        </p>
+        <button
+          class="action-btn"
+          onclick="
+            localStorage.clear();
+            window.location.href = 'index.html';
+          "
+        >
+          Submit Another Response
+        </button>
+        <br />
+        <!-- 演示用隐藏入口：点击可切换至 HR / 投顾审核端 -->
+        <button class="toggle-mode" onclick="switchToAdviserPortal()">
+          [Demo Mode] Switch to HR / Adviser Review Portal ➔
+        </button>
+      </div>
+    </div>
+
+    <!-- HR / 投顾视角（包含雷达图与工作流决策控制面板） -->
+    <div class="dashboard-container" id="adviserPortal">
+      <div class="dash-card">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+          "
+        >
+          <span class="badge">FRAME • ADVISER REVIEW PORTAL</span>
+          <span
+            style="color: var(--text-muted); font-size: 13px"
+            id="locationInfo"
+            >Ireland</span
+          >
+        </div>
+        <h1 id="welcomeTitle">Client Profile</h1>
+        <p
+          id="clientSummaryText"
+          style="
+            color: var(--text-muted);
+            font-size: 15px;
+            margin: 0;
+            line-height: 1.5;
+          "
+        ></p>
+      </div>
+
+      <!-- 五维度雷达图展示区 -->
+      <div class="radar-container">
+        <canvas id="radarChart" width="450" height="380"></canvas>
+      </div>
+
+      <div class="dash-card">
+        <h2 style="font-size: 20px; font-weight: 400; margin-top: 0">
+          <span style="color: var(--accent-gold)">✦</span> Executive AI Summary
+          & Adviser Decision Control
+        </h2>
+        <p
+          id="aiInsightText"
+          style="font-size: 15px; line-height: 1.7; margin-bottom: 24px"
+        ></p>
+
+        <div
+          style="
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+          "
+        >
+          Adviser Workflow Decision Action[cite: 15]
+        </div>
+        <div class="decision-panel">
+          <button
+            class="decision-btn btn-green"
+            onclick="makeDecision('GREEN TICK: Pass[cite: 15]')"
+          >
+            ✔ GREEN TICK
+          </button>
+          <button
+            class="decision-btn btn-orange"
+            onclick="makeDecision('ORANGE REVIEW: Review later[cite: 15]')"
+          >
+            ⚠ ORANGE REVIEW
+          </button>
+          <button
+            class="decision-btn btn-red"
+            onclick="makeDecision('RED X: Stop[cite: 15]')"
+          >
+            ✖ RED X
+          </button>
+        </div>
+        <div style="margin-top: 24px">
+          <button
+            class="action-btn"
+            onclick="
+              alert('Client profile successfully synced to CRM pipeline.')
+            "
+          >
+            ⚡ Sync CRM Pipeline
+          </button>
+          <button class="action-btn" onclick="switchToClientView()">
+            ← Back to Client View
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let currentScores = {
+        goal_clarity: 70,
+        investment_knowledge: 60,
+        risk_comfort: 50,
+        planning_readiness: 80,
+        financial_complexity: 65,
+      };
+
+      window.onload = function () {
+        const name = localStorage.getItem("userName") || "Client";
+        const location = localStorage.getItem("userLocation") || "Ireland";
+        const occupation = localStorage.getItem("userOccupation") || "Investor";
+        const goalSummary =
+          localStorage.getItem("goalSummary") || "Wealth Advisory";
+        const goalCategory = localStorage.getItem("goalCategory") || "general";
+        const goalTimeframe =
+          localStorage.getItem("goalTimeframe") || "2-5 years";
+
+        document.getElementById("welcomeTitle").textContent =
+          `Client Profile: ${name} (${occupation})`;
+        document.getElementById("locationInfo").textContent = location;
+        document.getElementById("clientSummaryText").textContent =
+          `Main Goal: [${goalCategory.toUpperCase()}] within ${goalTimeframe}. Summary: "${goalSummary}"`;
+
+        const scoresRaw = localStorage.getItem("userScores");
+        if (scoresRaw) {
+          currentScores = JSON.parse(scoresRaw);
+        }
+
+        const aiInsight = localStorage.getItem("aiInsight");
+        if (aiInsight) {
+          document.getElementById("aiInsightText").textContent = aiInsight;
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("mode") === "adviser") {
+          switchToAdviserPortal();
+        }
+      };
+
+      function drawRadarChart() {
+        const canvas = document.getElementById("radarChart");
+        if (!canvas.getContext) return;
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2 - 10;
+        const radius = 110;
+        const labels = [
+          "Goal Clarity",
+          "Investment Knowledge",
+          "Risk Comfort",
+          "Planning Readiness",
+          "Financial Complexity",
+        ];
+        const values = [
+          currentScores.goal_clarity / 100,
+          currentScores.investment_knowledge / 100,
+          currentScores.risk_comfort / 100,
+          currentScores.planning_readiness / 100,
+          currentScores.financial_complexity / 100,
+        ];
+        const total = labels.length;
+
+        // 绘制网格环 (同心五边形/多边形)
+        for (let level = 1; level <= 4; level++) {
+          ctx.beginPath();
+          ctx.strokeStyle = "#e2dfd8";
+          ctx.lineWidth = 1;
+          const r = (radius / 4) * level;
+          for (let i = 0; i < total; i++) {
+            const angle = ((Math.PI * 2) / total) * i - Math.PI / 2;
+            const x = centerX + r * Math.cos(angle);
+            const y = centerY + r * Math.sin(angle);
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          ctx.closePath();
+          ctx.stroke();
+        }
+
+        // 绘制放射轴线
+        for (let i = 0; i < total; i++) {
+          const angle = ((Math.PI * 2) / total) * i - Math.PI / 2;
+          ctx.beginPath();
+          ctx.strokeStyle = "#e2dfd8";
+          ctx.moveTo(centerX, centerY);
+          ctx.lineTo(
+            centerX + radius * Math.cos(angle),
+            centerY + radius * Math.sin(angle),
+          );
+          ctx.stroke();
+
+          // 绘制文字标签
+          const labelRadius = radius + 28;
+          const lx = centerX + labelRadius * Math.cos(angle);
+          const ly = centerY + labelRadius * Math.sin(angle);
+          ctx.font = "11px -apple-system, sans-serif";
+          ctx.fillStyle = "#6b6e65";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(labels[i], lx, ly);
+        }
+
+        // 绘制用户评分雷达多边形
+        ctx.beginPath();
+        let points = [];
+        for (let i = 0; i < total; i++) {
+          const angle = ((Math.PI * 2) / total) * i - Math.PI / 2;
+          const val = values[i];
+          const x = centerX + radius * val * Math.cos(angle);
+          const y = centerY + radius * val * Math.sin(angle);
+          points.push({ x, y });
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.fillStyle = "rgba(156, 132, 86, 0.2)"; // 香槟金半透明填充
+        ctx.fill();
+        ctx.strokeStyle = "#9c8456"; // 香槟金边框
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // 绘制顶点小圆点
+        points.forEach((p) => {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+          ctx.fillStyle = "#9c8456";
+          ctx.fill();
+        });
+      }
+
+      function switchToAdviserPortal() {
+        document.getElementById("clientView").style.display = "none";
+        document.getElementById("adviserPortal").style.display = "block";
+        setTimeout(drawRadarChart, 50); // 切换后渲染雷达图
+      }
+
+      function switchToClientView() {
+        document.getElementById("adviserPortal").style.display = "none";
+        document.getElementById("clientView").style.display = "block";
+      }
+
+      function makeDecision(decisionText) {
+        const reason = prompt(
+          "Enter short adviser reason for this decision[cite: 15]:",
+          "Meets compliance and risk tolerance criteria.",
+        );
+        if (reason !== null)
+          alert(`Decision Recorded: ${decisionText}\nReason: ${reason}`);
+      }
+    </script>
+  </body>
+</html>
