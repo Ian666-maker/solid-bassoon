@@ -11,7 +11,7 @@ RUN pip install --no-cache-dir fastapi uvicorn openai pydantic pymysql
 COPY . /app
 
 # 暴露 FastAPI 运行的 8000 端口
-EXPOSE 8000
+EXPOSE 8001
 
 # 启动命令
 CMD ["python", "main.py"]
