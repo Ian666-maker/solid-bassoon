@@ -149,7 +149,7 @@
     <div class="container" id="clientView">
       <div class="card">
         <span class="badge">FRAME PRIVATE WEALTH</span>
-        <h1>Submission Received Successfully</h1>
+        <h1>Assessment Completed</h1>
         <p>
           Thank you for completing the 10-question intake assessment. Your assessment has been completed in this browser-based demonstration. The
           prototype does not securely transmit or store client records. No adviser
@@ -226,24 +226,24 @@
             margin-bottom: 10px;
           "
         >
-          Adviser Workflow Decision Action[cite: 15]
+          Adviser Workflow Decision Action
         </div>
         <div class="decision-panel">
           <button
             class="decision-btn btn-green"
-            onclick="makeDecision('GREEN TICK: Pass[cite: 15]')"
+            onclick="makeDecision('GREEN TICK: Pass')"
           >
             ✔ Accepted
           </button>
           <button
             class="decision-btn btn-orange"
-            onclick="makeDecision('ORANGE REVIEW: Review later[cite: 15]')"
+            onclick="makeDecision('ORANGE REVIEW: Review later')"
           >
             ⚠ Deferred
           </button>
           <button
             class="decision-btn btn-red"
-            onclick="makeDecision('RED X: Stop[cite: 15]')"
+            onclick="makeDecision('RED X: Stop')"
           >
             ✖ Rejected
           </button>
@@ -411,11 +411,11 @@
 
       function makeDecision(decisionText) {
         const reason = prompt(
-          "Enter short adviser reason for this decision[cite: 15]:",
+          "Enter short adviser reason for this decision:",
           "Meets compliance and risk tolerance criteria.",
         );
         if (reason !== null)
-          alert(`Decision Recorded: ${decisionText}\nReason: ${reason}`);
+          alert(`Demo only — not saved: ${decisionText}\nReason: ${reason}`);
       }
     </script>
   </body>
