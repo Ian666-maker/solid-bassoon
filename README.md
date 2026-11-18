@@ -1,52 +1,119 @@
-<div align="center">
+# FRAME — Private Wealth Advisory Intake & Review Prototype
 
-# FRAME — Boutique Private Wealth Advisory & AI Intake Platform
+FRAME is a web-based client onboarding and adviser-review prototype. It combines a multi-step financial profile questionnaire, a five-dimension profile visualisation, and an AI-generated executive summary.
 
-> *Sophisticated wealth advisory intake, dynamic risk profiling, and compliance automation tailored for high-net-worth clients.*
+> **Project status:** Portfolio prototype / demonstration. It is not a financial advice product and must not be used with real client financial or personal data. Authentication, persistent storage, privacy controls, and production security are not implemented.
 
-[![Vercel Deployment](https://img.shields.io/badge/Status-Live%20Production-success?style=flat-square)](https://vercel.com)
-[![Tech Stack](https://img.shields.io/badge/Stack-HTML5%20%7C%20CSS3%20%7C%20FastAPI%20%7C%20OpenAI-informational?style=flat-square)]()
-[![Design System](https://img.shields.io/badge/Aesthetic-Alabaster%20%26%20Champagne%20Gold-9c8456?style=flat-square)]()
+## Features
 
-</div>
+- **Client onboarding:** collects a client's name, age range, location, and occupation.
+- **10-question assessment:** captures goals, time horizon, financial complexity, investment knowledge, risk comfort, planning readiness, and support preferences.
+- **Five-dimension scoring:** calculates scores for Goal Clarity, Investment Knowledge, Risk Comfort, Planning Readiness, and Financial Complexity.
+- **Radar visualisation:** renders the five scores in the adviser view using the HTML Canvas API.
+- **AI summary endpoint:** FastAPI exposes `POST /api/ai-analyze`, which sends the submitted profile to the OpenAI API (configured for `gpt-4o`) and returns an executive summary.
+- **Adviser review demo:** provides accept, defer, and reject controls in a demonstration dashboard.
 
----
+## Tech stack
 
-## 🌟 Overview
+| Layer | Technology |
+| --- | --- |
+| Client interface | HTML5, CSS3, JavaScript |
+| Assessment visualisation | HTML Canvas API |
+| Backend API | Python, FastAPI, Pydantic |
+| AI integration | OpenAI Python SDK |
+| Container | Docker |
 
-**FRAME** is a next-generation boutique wealth advisory intake and compliance review platform designed to bridge the gap between high-net-worth individuals (HNWIs) and private wealth advisers. 
-
-Traditional wealth onboarding is often cumbersome, fragmented, and lacks immediate quantitative visualization. FRAME streamlines this entire journey into a seamless, high-end digital experience—combining a refined 10-question intake assessment, a dynamic 5-dimension risk/readiness radar chart, AI-driven executive summaries, and an automated adviser compliance review workflow.
-
----
-
-## ✨ Core Features
-
-* **High-End "Alabaster" Design System**: 
-  * Custom-crafted UI inspired by top-tier private banks and family offices.
-  * Features a sophisticated warm Alabaster background, Charcoal typography, and Champagne Gold accents.
-* **Comprehensive 10-Question Client Intake**: 
-  * Seamless multi-step questionnaire capturing client aspirations, risk appetites, and structural financial complexity.
-* **Dynamic 5-Dimension Pentagon Radar Chart**: 
-  * Native HTML5 Canvas visualization mapping client profiles across *Goal Clarity*, *Investment Knowledge*, *Risk Comfort*, *Planning Readiness*, and *Financial Complexity*.
-* **AI-Powered Executive Insights**: 
-  * Integrated with OpenAI GPT-4o to instantly generate professional 3-sentence executive summaries for incoming client profiles.
-* **Adviser Command Center & Workflow Controls**: 
-  * Interactive compliance decision panel (`✔ GREEN TICK`, `⚠ ORANGE REVIEW`, `✖ RED X`) ensuring rigorous audit trails and automated reporting.
-
----
-
-## 🚀 System Architecture
+## Architecture
 
 ```text
-┌─────────────────────────┐          ┌─────────────────────────┐          ┌─────────────────────────┐
-│   Client Intake Web UI  │ ───────> │  Python FastAPI Backend │ ───────> │    OpenAI GPT-4o API    │
-│  (HTML5 / CSS3 / JS)    │          │  (AI Analysis & Router) │          │ (Executive Risk Insight)│
-└─────────────────────────┘          └─────────────────────────┘          └─────────────────────────┘
-             │                                    │
-             └──────────────────┬─────────────────┘
-                                ▼
-                     ┌─────────────────────┐
-                     │ Adviser Review Hub  │
-                     │ (Workflow Decision) │
-                     └─────────────────────┘
+Client onboarding
+      |
+      v
+10-question assessment
+      |
+      v
+Browser-side scoring and localStorage
+      |
+      +----> Five-dimension radar chart / adviser demo
+      |
+      v
+FastAPI POST /api/ai-analyze
+      |
+      v
+OpenAI chat completion
+      |
+      v
+Executive summary returned to the browser
+```
+
+## Repository structure
+
+```text
+solid-bassoon/
+├── index.html       # Client onboarding
+├── quiz.html        # 10-question assessment and scoring
+├── dashboard.html   # Submission view and adviser demo
+├── main.py          # FastAPI and OpenAI integration
+├── Dockerfile
+└── README.md
+```
+
+## Run locally
+
+### Prerequisites
+
+- Python 3.10+
+- An OpenAI API key (only needed for live AI-generated summaries)
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/Ian666-maker/solid-bassoon.git
+cd solid-bassoon
+```
+
+### 2. Install backend dependencies
+
+```bash
+python -m venv .venv
+```
+
+Activate the virtual environment, then run:
+
+```bash
+pip install fastapi uvicorn openai pydantic
+```
+
+### 3. Configure the API key
+
+Set `OPENAI_API_KEY` in your environment. Never put a real API key in source code or commit it to Git.
+
+### 4. Start the API
+
+```bash
+python main.py
+```
+
+The current FastAPI entry point listens on port `8001`.
+
+### 5. Open the frontend
+
+Open `index.html` in a browser to explore the onboarding flow. The current frontend code calls `http://localhost:8000/api/ai-analyze`, while the backend entry point listens on port `8001`; align these ports before expecting the live AI request to work end-to-end. The browser also needs to be served from an appropriate local web server for a more representative test setup.
+
+## Current limitations & next steps
+
+The current implementation is a demonstration, not a deployable financial-services workflow:
+
+- Client details and assessment results are stored in browser `localStorage`, not a backend database.
+- Adviser decisions are demonstrated with browser prompts and alerts; they are not persisted as audit records.
+- The API currently allows all CORS origins and uses a placeholder fallback when `OPENAI_API_KEY` is absent. Restrict origins and fail safely when secrets are missing.
+- SMTP settings in `main.py` are placeholders. Configure email credentials through environment variables before implementing email delivery.
+- Add authentication and role-based access control for adviser functions.
+- Add consent, data minimisation, retention, deletion, encryption, and privacy safeguards before handling personal data.
+- Add automated tests, API validation, error handling, and deployment configuration.
+
+## Author
+
+**YiHan Diao** — Computing Science undergraduate interested in backend development and practical AI applications.
+
+[GitHub repository](https://github.com/Ian666-maker/solid-bassoon)
