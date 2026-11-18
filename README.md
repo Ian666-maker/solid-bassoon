@@ -94,19 +94,19 @@ Set `OPENAI_API_KEY` in your environment. Never put a real API key in source cod
 python main.py
 ```
 
-The current FastAPI entry point listens on port `8001`.
+The FastAPI entry point listens on port `8001` by default.
 
 ### 5. Open the frontend
 
-Open `index.html` in a browser to explore the onboarding flow. The current frontend code calls `http://localhost:8000/api/ai-analyze`, while the backend entry point listens on port `8001`; align these ports before expecting the live AI request to work end-to-end. The browser also needs to be served from an appropriate local web server for a more representative test setup.
+Open `index.html` in a browser to explore the onboarding flow. The frontend calls `http://localhost:8001/api/ai-analyze`, matching the backend's default port. Start the API before completing the assessment. The browser also needs to be served from an appropriate local web server for a more representative test setup. The Dockerfile exposes port `8001`.
 
 ## Current limitations & next steps
 
 The current implementation is a demonstration, not a deployable financial-services workflow:
 
-- Client details and assessment results are stored in browser `localStorage`, not a backend database.
-- Adviser decisions are demonstrated with browser prompts and alerts; they are not persisted as audit records.
-- The API currently allows all CORS origins and uses a placeholder fallback when `OPENAI_API_KEY` is absent. Restrict origins and fail safely when secrets are missing.
+- Client details and assessment results are stored in browser `localStorage`, not a backend database. The submission screen is a local demonstration and does not securely transmit records to an adviser team.
+- Adviser decisions and the CRM sync control are demonstration-only browser prompts/alerts; no decision is saved and no CRM integration is implemented.
+- The API currently allows all CORS origins and uses a placeholder fallback when `OPENAI_API_KEY` is absent. In that case, the backend returns a fallback demonstration summary rather than a live OpenAI-generated result. Restrict origins and fail safely when secrets are missing.
 - SMTP settings in `main.py` are placeholders. Configure email credentials through environment variables before implementing email delivery.
 - Add authentication and role-based access control for adviser functions.
 - Add consent, data minimisation, retention, deletion, encryption, and privacy safeguards before handling personal data.
